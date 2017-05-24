@@ -12,10 +12,10 @@ center_x = 100.0
 center_y = 100.0
 
 # cube size
-size=20.0
+size = 20.0
 
 # gap for the skirt
-skirt_gap = size + 10
+skirt_gap = 3
 
 # areas of filament and nozzle to compute extrusion
 filamentArea = pow(1.75 / 2, 2) * math.pi
@@ -64,43 +64,47 @@ M117 One wall ...
 G1 F1000 Z5
 ''')
 
-extrLength = (size * nozzleArea) / filamentArea
 e = 0.0
 
 print("GO Z0.2")
 
+# draw the skirt
 for i in range(0, 6):
-	print("G0 X{0} Y{1} F7200".format(center_x - (skirt_gap + i), center_y - (skirt_gap + i)))
+        gap = (size / 2) + skirt_gap + i
 
-	e += extrude(center_x - (skirt_gap + i), center_y - (skirt_gap + i), center_x + (skirt_gap + i), center_y - (skirt_gap + i))
-	print("G1 X{0:.1f} Y{1:.1f} E{2:.3f} F{3}".format(center_x + (skirt_gap + i), center_y - (skirt_gap + i), e, speed))
+        print("G0 X{0} Y{1} F7200".format(center_x - gap, center_y - gap))
+
+        e += extrude(center_x - gap, center_y - gap, center_x + gap, center_y - gap)
+        print("G1 X{0:.1f} Y{1:.1f} E{2:.3f} F{3}".format(center_x + gap, center_y - gap, e, speed))
         
-	e += extrude(center_x + (skirt_gap + i), center_y - (skirt_gap + i), center_x + (skirt_gap + i), center_y + (skirt_gap + i))
-	print("G1 X{0:.1f} Y{1:.1f} E{2:.3f}".format(center_x + (skirt_gap + i), center_y + (skirt_gap + i), e))
+        e += extrude(center_x + gap, center_y - gap, center_x + gap, center_y + gap)
+        print("G1 X{0:.1f} Y{1:.1f} E{2:.3f}".format(center_x + gap, center_y + gap, e))
 
-	e += extrude(center_x + (skirt_gap + i), center_y + (skirt_gap + i), center_x - (skirt_gap + i), center_y + (skirt_gap + i))
-	print("G1 X{0:.1f} Y{1:.1f} E{2:.3f}".format(center_x - (skirt_gap + i), center_y + (skirt_gap + i), e))
+        e += extrude(center_x + gap, center_y + gap, center_x - gap, center_y + gap)
+        print("G1 X{0:.1f} Y{1:.1f} E{2:.3f}".format(center_x - gap, center_y + gap, e))
 
-	e += extrude(center_x - (skirt_gap + i), center_y + (skirt_gap + i), center_x - (skirt_gap + i), center_y - (skirt_gap + i))
-	print("G1 X{0:.1f} Y{1:.1f} E{2:.3f}".format(center_x - (skirt_gap + i), center_y - (skirt_gap + i), e))
+        e += extrude(center_x - gap, center_y + gap, center_x - gap, center_y - gap)
+        print("G1 X{0:.1f} Y{1:.1f} E{2:.3f}".format(center_x - gap, center_y - gap, e))
 
 # fan speed to max
 print("M106 S255")
-print("G0 X{0} Y{1} F7200".format(center_x, center_y))
+print("G0 X{0} Y{1} F7200".format(center_x - (size / 2), center_y - (size / 2)))
+
+extrLength = (size * nozzleArea) / filamentArea
 
 for i in [x * 0.2 for x in range(1, 51)]:
 	print("G0 Z{0:.3f}".format(i))
 
-	print("G1 X{0:.1f} Y{1:.1f} E{2:.3f} F{3}".format(center_x - size, center_y, e, speed))
+	print("G1 X{0:.1f} Y{1:.1f} E{2:.3f} F{3}".format(center_x + (size / 2), center_y - (size / 2), e, speed))
 	e += extrLength
 
-	print("G1 X{0:.1f} Y{1:.1f} E{2:.3f}".format(center_x - size, center_y - size, e))
+	print("G1 X{0:.1f} Y{1:.1f} E{2:.3f}".format(center_x + (size / 2), center_y + (size / 2), e))
 	e += extrLength
 
-	print("G1 X{0:.1f} Y{1:.1f} E{2:.3f}".format(center_x, center_y - size, e))
+	print("G1 X{0:.1f} Y{1:.1f} E{2:.3f}".format(center_x - (size / 2), center_y + (size / 2), e))
 	e += extrLength
 
-	print("G1 X{0:.1f} Y{1:.1f} E{2:.3f}".format(center_x, center_y, e))
+	print("G1 X{0:.1f} Y{1:.1f} E{2:.3f}".format(center_x - (size / 2), center_y - (size / 2), e))
 	e += extrLength
 
 print("")
