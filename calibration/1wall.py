@@ -25,7 +25,7 @@ nozzleArea = pow(0.35 / 2, 2) * math.pi
 speed = 20.0 * 60.0
 
 # tool: 0 for right extruder, 1 for left extruder
-tool = 0
+tool = 1 
 
 # temperature
 temperature = 190
@@ -44,21 +44,24 @@ def extrude(x0, y0, x1, y1):
 # Prolog
 print('''
 G28
-G1 Z5
-G1 Z0
+G1 Z5 F600
+G1 Z0 F600
 M107
 G90
 M82
 
 M104 T''' + str(tool) + ''' S''' + str(temperature) + 
-'''G92 E0
+'''
+G92 E0
 
 M109 T''' + str(tool) + ''' S''' + str(temperature) +
-'''T''' + str(tool) +
-'''M83
+'''
+T''' + str(tool) +
+'''
+M83
 G1 E10 F100
 M82
-G92 0
+G92 E0
 
 M117 One wall ...
 G1 F1000 Z5
@@ -88,6 +91,8 @@ for i in range(0, 6):
 
 # fan speed to max
 print("M106 S255")
+
+# draw the cube
 print("G0 X{0} Y{1} F7200".format(center_x - (size / 2), center_y - (size / 2)))
 
 extrLength = (size * nozzleArea) / filamentArea
@@ -115,7 +120,8 @@ G1 X200 Y200 Z130
 M107
 G91
 T''' + str(tool) + 
-'''G1 E-1
+'''
+G1 E-1
 M104 T''' + str(tool) + ''' S0
 
 G90
